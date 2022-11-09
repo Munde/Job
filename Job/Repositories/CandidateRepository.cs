@@ -46,9 +46,32 @@ namespace Job.Repositories
             }
         }
 
-        public ValueTask<Response> DeleteAsync(Guid id)
+        public async ValueTask<Response> DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            //Get the list of all candidates 
+            var candidates = (List<Candidate>)GetCsvRecords();
+            if (!candidates.Any())
+                return new Response(false, "No record found");
+
+            //if we have records then lets find the specific record
+            var candidate = candidates.FirstOrDefault(x => x.Id == id);
+
+            if (candidate is not null)
+                candidates.Remove(candidate);
+
+            using StreamWriter sw = new(_path, false, new UTF8Encoding(true));
+            using CsvWriter cw = new(sw);
+            cw.WriteHeader<Candidate>();
+            cw.NextRecord();
+
+
+            foreach (var item in candidates)
+            {
+                cw.WriteRecord(item);
+                cw.NextRecord();
+            }
+
+            return await Task.FromResult(new Response(false, "Record deleted successfully"));
         }
 
         public async ValueTask<IEnumerable<Candidate>> GetAllAsync(int page, int size)
