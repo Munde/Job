@@ -66,9 +66,21 @@ namespace Job.Repositories
             }
         }
 
-        public ValueTask<Candidate> GetAsync(Guid id)
+        public async ValueTask<Candidate> GetAsync(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using StreamReader reader = new(_path, Encoding.Default);
+                using CsvReader csvReader = new CsvReader(reader);
+                csvReader.Configuration.RegisterClassMap<CandidateMap>();
+                var records = csvReader.GetRecords<Candidate>();
+                var candidate = records.FirstOrDefault(x => x.Id == id);
+                Candidate? result = candidate ?? default;
+                return await Task.FromResult<Candidate>(result);
+            }catch(Exception)
+            {
+                throw;
+            }
         }
     }
 }
