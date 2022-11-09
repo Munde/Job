@@ -61,7 +61,7 @@ namespace Job.Repositories
                 foreach (var cand in candidates)
                 {
                     //write the candidate details to the csv
-                    cw.WriteRecord(candidate);
+                    cw.WriteRecord(cand);
                     cw.NextRecord();
                 }
 

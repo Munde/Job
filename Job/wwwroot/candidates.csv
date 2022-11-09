@@ -1,2 +1,6 @@
 ﻿Firstname,Lastname,Email,Phone,CallTimeInterval,LinkedInProfile,GithubLink,Comment,Id,CreatedAt
-string,string,user@example.com,string,string,string,string,string,cec4afd5-4d5d-4989-830c-1b1858b44b11,09/11/2022 5:54:40 PM +03:00
+Hans,Andrew,hans@example.com,+255712023087,any time from 2pm to 8pm,https://www.linkedin.com/in/hans-eliah,https://www.github.com/hansnet,Hard working guy,dba2dba1-f61c-4b24-97a9-45297899edbb,09/11/2022 6:15:57 PM +03:00
+Hans,Andrew,hans@example.com,+255712023087,any time from 2pm to 8pm,https://www.linkedin.com/in/hans-eliah,https://www.github.com/hansnet,Hard working guy,dba2dba1-f61c-4b24-97a9-45297899edbb,09/11/2022 6:15:57 PM +03:00
+Hans,Andrew,hans@example.com,+255712023087,any time from 2pm to 8pm,https://www.linkedin.com/in/hans-eliah,https://www.github.com/hansnet,Hard working guy,dba2dba1-f61c-4b24-97a9-45297899edbb,09/11/2022 6:15:57 PM +03:00
+Hans,Andrew,hans@example.com,+255712023087,any time from 2pm to 8pm,https://www.linkedin.com/in/hans-eliah,https://www.github.com/hansnet,Hard working guy,dba2dba1-f61c-4b24-97a9-45297899edbb,09/11/2022 6:15:57 PM +03:00
+Zephania,Eliah,zmunde5@gmail.com,255785900162,any time from 10pm to 12am,https://www.linkedin.com/in/zephania,https://github.co.tz/munde,hard working guy,d0376480-ad88-417a-b4c5-5121ef6f2140,09/11/2022 6:19:37 PM +03:00
