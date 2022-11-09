@@ -13,13 +13,14 @@ namespace Job.Test
 {
     public class CandidatesControllerTest
     {
+        private readonly new Mock<ICandidateRepository> repositoryStub=new();
         [Fact]
         public async Task GetCandidates_WithEmptyList_ReturnNotFound()
         {
             //Arrange
             int page = 1,
                 size = 5;
-            var repositoryStub = new Mock<ICandidateRepository>();
+
             repositoryStub.Setup(repo => repo.GetAllAsync(page, size))
                 .ReturnsAsync(new List<Candidate>());
 
@@ -49,7 +50,6 @@ namespace Job.Test
                 RandomCandidate()
             };
 
-            var repositoryStub = new Mock<ICandidateRepository>();
             repositoryStub.Setup(repo => repo.GetAllAsync(page, size))
                 .ReturnsAsync(candidates);
 
@@ -82,7 +82,6 @@ namespace Job.Test
                 LinkedInProfile = "https://www.linkedin.com/in/zephania-eliah-870b834b/",
             };
 
-            var repositoryStub = new Mock<ICandidateRepository>();
             var controller = new CandidatesController(repositoryStub.Object);
 
             //Act
@@ -102,7 +101,6 @@ namespace Job.Test
         {
             //Arrange
             var existingCandidate = RandomCandidate();
-            var repositoryStub = new Mock<ICandidateRepository>();
             repositoryStub.Setup(repo => repo.GetAsync(It.IsAny<Guid>()))
                .ReturnsAsync(existingCandidate);
 
