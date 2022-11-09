@@ -5,7 +5,8 @@ using Job.Mappers;
 using Job.Shared;
 using Job.Shared.Models.Candidates;
 
-using System.IO;
+using LazyCache;
+
 using System.Text;
 
 namespace Job.Repositories
@@ -14,12 +15,15 @@ namespace Job.Repositories
     {
         private readonly string _datastore = "candidates.csv";
         private readonly string _path;
-        private IWebHostEnvironment _environment;
+        private readonly IWebHostEnvironment _environment;
+        private readonly IAppCache _cache;
+        private readonly string _cacheKey = "candidates_cache";
 
-        public CandidateRepository(IWebHostEnvironment environment)
+        public CandidateRepository(IWebHostEnvironment environment, IAppCache cache)
         {
-            _environment = environment;
-            _path = $"{_environment.WebRootPath}/{_datastore}";
+            this._environment = environment;
+            this._cache = cache;
+            this._path = $"{_environment.WebRootPath}/{_datastore}";
         }
 
         public async ValueTask<Response> CreateOrUpdateAsync(Candidate candidate)
@@ -31,7 +35,7 @@ namespace Job.Repositories
                 List<Candidate> candidates = (List<Candidate>)GetCsvRecords();
 
                 //check if the candidate details exists using given email
-                var existingCandidate = candidates.FirstOrDefault(x=>x.Email == candidate.Email);
+                var existingCandidate = candidates.FirstOrDefault(x => x.Email == candidate.Email);
 
                 //if candidate found then lets update 
                 if (existingCandidate is not null)
@@ -49,7 +53,7 @@ namespace Job.Repositories
                     candidates.Add(candidate);
                 }
 
-                    //create a stream write by providing path and the encoding type 
+                //create a stream write by providing path and the encoding type 
                 using StreamWriter sw = new(_path, false, new UTF8Encoding(true));
                 using CsvWriter cw = new(sw);
 
@@ -64,8 +68,11 @@ namespace Job.Repositories
                     cw.WriteRecord(cand);
                     cw.NextRecord();
                 }
+                //invalidate the cache so as it can fetch new data 
+                _cache.Remove(_cacheKey);
 
-                return await Task.FromResult(new Response(true, "Candidate details recorded successfully"));
+                var response = new Response(true, "Candidate details recorded successfully");
+                return await Task.FromResult(response);
             }
             catch (Exception ex)
             {
@@ -98,21 +105,36 @@ namespace Job.Repositories
                 cw.NextRecord();
             }
 
-            return await Task.FromResult(new Response(false, "Record deleted successfully"));
+            //invalidate the cache so as it can fetch new data 
+            _cache.Remove(_cacheKey);
+
+            var response = new Response(false, "Record deleted successfully");
+            return await Task.FromResult(response);
         }
 
         public async ValueTask<IEnumerable<Candidate>> GetAllAsync(int page, int size)
         {
-            var records = GetCsvRecords();
-            return await Task.FromResult(records.Skip((page - 1) * size).Take(size).ToList());
+            Func<IEnumerable<Candidate>> candidatesFactory = GetCsvRecords;
+            var records = _cache.GetOrAdd(_cacheKey, candidatesFactory);
+
+            var candidates = records.
+                Skip((page - 1) * size).
+                Take(size).
+                ToList();
+
+            return await Task.FromResult(candidates);
         }
 
         public async ValueTask<Candidate> GetAsync(Guid id)
         {
-            var records = GetCsvRecords();
+            Func<IEnumerable<Candidate>> candidatesFactory = GetCsvRecords;
+            var records = _cache.GetOrAdd(_cacheKey, candidatesFactory);
             var candidate = records.FirstOrDefault(x => x.Id == id);
-            Candidate? result = candidate ?? default;
-            return await Task.FromResult<Candidate>(result);
+
+            if (candidate is null)
+                return default;
+
+            return await Task.FromResult(candidate);
         }
 
 
@@ -124,7 +146,7 @@ namespace Job.Repositories
                 using CsvReader csvReader = new(reader);
                 csvReader.Configuration.RegisterClassMap<CandidateMap>();
                 var records = (csvReader.GetRecords<Candidate>()).ToList();
-                return records??new List<Candidate>();
+                return records ?? new List<Candidate>();
             }
             catch (Exception)
             {
