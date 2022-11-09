@@ -1,9 +1,11 @@
 ﻿using CsvHelper;
 
 using Job.Domains.Candidates;
+using Job.Mappers;
 using Job.Shared;
 using Job.Shared.Models.Candidates;
 
+using System.IO;
 using System.Text;
 
 namespace Job.Repositories
@@ -49,9 +51,19 @@ namespace Job.Repositories
             throw new NotImplementedException();
         }
 
-        public ValueTask<IEnumerable<Candidate>> GetAllAsync(int page, int size)
+        public async ValueTask<IEnumerable<Candidate>> GetAllAsync(int page, int size)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using StreamReader reader = new(_path, Encoding.Default);
+                using CsvReader csvReader = new CsvReader(reader);
+                csvReader.Configuration.RegisterClassMap<CandidateMap>();
+                var records = csvReader.GetRecords<Candidate>();
+                return await Task.FromResult(records.Skip((page-1)*size).Take(size).ToList());
+            }catch(Exception)
+            {
+                throw;
+            }
         }
 
         public ValueTask<Candidate> GetAsync(Guid id)
