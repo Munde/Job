@@ -3,9 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33103.201
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Job", "Job\Job.csproj", "{D971DAAB-D744-47B5-9D2D-952CC7551899}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Job", "Job\Job.csproj", "{D971DAAB-D744-47B5-9D2D-952CC7551899}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Job.Shared", "Job.Shared\Job.Shared.csproj", "{10CADBF7-397B-4389-AC26-957579B19147}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Job.Shared", "Job.Shared\Job.Shared.csproj", "{10CADBF7-397B-4389-AC26-957579B19147}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{69A878A7-6C0B-44A4-9E23-9E1D3D4F8BDF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4CCD7F6C-97B2-4D76-86FC-FA845959A57C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Job.Test", "Job.Test\Job.Test.csproj", "{360CA670-A4AC-46C8-9C2A-F56DFEB60E14}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +27,18 @@ Global
 		{10CADBF7-397B-4389-AC26-957579B19147}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10CADBF7-397B-4389-AC26-957579B19147}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10CADBF7-397B-4389-AC26-957579B19147}.Release|Any CPU.Build.0 = Release|Any CPU
+		{360CA670-A4AC-46C8-9C2A-F56DFEB60E14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{360CA670-A4AC-46C8-9C2A-F56DFEB60E14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{360CA670-A4AC-46C8-9C2A-F56DFEB60E14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{360CA670-A4AC-46C8-9C2A-F56DFEB60E14}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D971DAAB-D744-47B5-9D2D-952CC7551899} = {69A878A7-6C0B-44A4-9E23-9E1D3D4F8BDF}
+		{10CADBF7-397B-4389-AC26-957579B19147} = {69A878A7-6C0B-44A4-9E23-9E1D3D4F8BDF}
+		{360CA670-A4AC-46C8-9C2A-F56DFEB60E14} = {4CCD7F6C-97B2-4D76-86FC-FA845959A57C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4FFD8BCB-97EF-4860-887E-F6296C96A040}
