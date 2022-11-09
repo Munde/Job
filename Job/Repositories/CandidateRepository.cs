@@ -21,16 +21,21 @@ namespace Job.Repositories
 
         public CandidateRepository(IWebHostEnvironment environment, IAppCache cache)
         {
-            this._environment = environment;
-            this._cache = cache;
-            this._path = $"{_environment.WebRootPath}/{_datastore}";
+            _environment = environment;
+            _cache = cache;
+            _path = $"{_environment.WebRootPath}/{_datastore}";
         }
 
+
+        /// <summary>
+        /// adds or updates candidate record in the data store
+        /// </summary>
+        /// <param name="candidate"></param>
+        /// <returns></returns>
         public async ValueTask<Response> CreateOrUpdateAsync(Candidate candidate)
         {
             try
             {
-
                 //Get all the records and cast to list 
                 List<Candidate> candidates = (List<Candidate>)GetCsvRecords();
 
@@ -80,6 +85,12 @@ namespace Job.Repositories
             }
         }
 
+
+        /// <summary>
+        /// Deletes specified candidate from the datastore by specific id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async ValueTask<Response> DeleteAsync(Guid id)
         {
             //Get the list of all candidates 
@@ -112,8 +123,16 @@ namespace Job.Repositories
             return await Task.FromResult(response);
         }
 
+
+        /// <summary>
+        /// Gets all records of candidates based on specied page and pagesize
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="size"></param>
+        /// <returns></returns>
         public async ValueTask<IEnumerable<Candidate>> GetAllAsync(int page, int size)
         {
+            //create candidate factory to pass to get or add method of lazy cache
             Func<IEnumerable<Candidate>> candidatesFactory = GetCsvRecords;
             var records = _cache.GetOrAdd(_cacheKey, candidatesFactory);
 
@@ -125,6 +144,12 @@ namespace Job.Repositories
             return await Task.FromResult(candidates);
         }
 
+
+        /// <summary>
+        /// Gets a candidate by specific candidate id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async ValueTask<Candidate> GetAsync(Guid id)
         {
             Func<IEnumerable<Candidate>> candidatesFactory = GetCsvRecords;
@@ -137,7 +162,10 @@ namespace Job.Repositories
             return await Task.FromResult(candidate);
         }
 
-
+        /// <summary>
+        /// reads records from csv file
+        /// </summary>
+        /// <returns></returns>
         private IEnumerable<Candidate> GetCsvRecords()
         {
             try
