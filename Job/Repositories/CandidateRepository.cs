@@ -1,6 +1,6 @@
 ﻿namespace Job.Repositories
 {
-    public interface ICandidateRepository
+    public class CandidateRepository
     {
     }
 }
