@@ -18,10 +18,11 @@ namespace Job.Shared.Dtos.Candidates
         [StringLength(50)]
         public string? CallTimeInterval { get; set; }
 
-        [StringLength(100)]
+        [StringLength(100),Url(ErrorMessage ="Provide a valid linked in profile link")]
+
         public string? LinkedInProfile { get; set; }
 
-        [StringLength(100)]
+        [StringLength(100),Url(ErrorMessage ="Provide a valid github link")]
         public string? GithubLink { get; set; }
         public string? Comment { get; set; }
     }
