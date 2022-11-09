@@ -1,5 +1,7 @@
 ﻿using Job.Domains.Candidates;
 using Job.Repositories;
+using Job.Shared.Dtos.Candidates;
+using Job.Shared;
 using Job.Shared.Models.Candidates;
 
 using Microsoft.AspNetCore.Http;
@@ -11,11 +13,11 @@ namespace Job.Controllers
     [ApiController]
     public class CandidatesController : ControllerBase
     {
-        private readonly ICandidateRepository repository;
+        private readonly ICandidateRepository _repository;
 
         public CandidatesController(ICandidateRepository repository)
         {
-            repository = repository;
+            _repository = repository;
         }
 
         [HttpGet]
@@ -31,7 +33,7 @@ namespace Job.Controllers
             if(size < 1)
                 throw new ArgumentException("Invalid page size provided", nameof(page));
 
-            var candidates = await repository.GetAllAsync(page, size);
+            var candidates = await _repository.GetAllAsync(page, size);
 
             if(!candidates.Any())
                 return NotFound();
@@ -40,11 +42,11 @@ namespace Job.Controllers
         }
 
         [HttpGet("{id}")]
-        [ProducesErrorResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async ValueTask<IActionResult> GetAsync(Guid id)
         {
-            var candidate = await repository.GetAsync(id);
+            var candidate = await _repository.GetAsync(id);
 
             if(candidate is null) 
                 return NotFound();
@@ -52,8 +54,50 @@ namespace Job.Controllers
             return Ok(candidate);
         }
 
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async ValueTask<ActionResult<Response>> PostAsync([FromBody] CandidateDto dto)
+        {
+            try
+            {
+                if (dto == null)
+                    return NoContent();
+
+                var candidate = new Candidate()
+                {
+                    Firstname = dto.Firstname,
+                    Lastname = dto.Lastname,
+                    Email = dto.Email,
+                    CallTimeInterval = dto.CallTimeInterval,
+                    Comment = dto.Comment,
+                    GithubLink = dto.GithubLink,
+                    LinkedInProfile = dto.LinkedInProfile,
+                    Phone = dto.Phone
+                };
+
+                await _repository.CreateOrUpdateAsync(candidate);
+                return CreatedAtAction(nameof(GetAsync), new { candidate.Id }, candidate);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
 
 
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async ValueTask<ActionResult<Response>> Delete(Guid id)
+        {
+            var candidate = await _repository.GetAsync(id);
+            if(candidate is null)
+                return NotFound();
 
+            await _repository.DeleteAsync(id);
+            return NoContent();
+        }
     }
 }
