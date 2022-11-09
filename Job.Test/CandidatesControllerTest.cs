@@ -96,6 +96,25 @@ namespace Job.Test
                 ExcludingMissingMembers());
         }
 
+
+        [Fact]
+        public async Task DeleteCandidate_WithExistingCandidate_ReturnsNoConent()
+        {
+            //Arrange
+            var existingCandidate = RandomCandidate();
+            var repositoryStub = new Mock<ICandidateRepository>();
+            repositoryStub.Setup(repo => repo.GetAsync(It.IsAny<Guid>()))
+               .ReturnsAsync(existingCandidate);
+
+            var controller = new CandidatesController(repositoryStub.Object);
+            //Act
+
+            var result = await controller.Delete(existingCandidate.Id);
+
+            //Assert
+            result.Result.Should().BeOfType<NoContentResult>();
+        }
+
         private Candidate RandomCandidate() => new Candidate
         {
             Id = Guid.NewGuid(),
