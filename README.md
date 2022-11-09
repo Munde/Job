@@ -2,7 +2,7 @@
 simple api to track candidate information and store them in a csv file
 
 #Nugets Used
-*CsvHelper
-*Moq
-*Fluent Assertions
+*CsvHelper \n
+*Moq \n
+*Fluent Assertions \n
 *Lazy cache
