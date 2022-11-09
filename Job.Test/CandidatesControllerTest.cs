@@ -2,6 +2,7 @@ using FluentAssertions;
 
 using Job.Controllers;
 using Job.Domains.Candidates;
+using Job.Shared.Dtos.Candidates;
 using Job.Shared.Models.Candidates;
 
 using Microsoft.AspNetCore.Mvc;
@@ -62,6 +63,37 @@ namespace Job.Test
             var returnedCandidates = result.Value as List<Candidate>;
             returnedCandidates.Should().BeEquivalentTo(candidates, 
                 option=>option.ComparingByMembers<Candidate>());
+        }
+
+
+        [Fact]
+        public async Task PostCandidate_WithCandidateToBePosted_ReturnsCreatedCandidate()
+        {
+            //Arrange
+            var candidateToBePosted = new CandidateDto
+            {
+                Email = "zmunde5@gmail.com",
+                Firstname = "Zephania",
+                Lastname = "Mundekesye",
+                Phone = "+255785900162",
+                CallTimeInterval = "any time from 2pm to 6pm",
+                Comment = "Hard working individual ready to learn",
+                GithubLink = "https://github.com/munde",
+                LinkedInProfile = "https://www.linkedin.com/in/zephania-eliah-870b834b/",
+            };
+
+            var repositoryStub = new Mock<ICandidateRepository>();
+            var controller = new CandidatesController(repositoryStub.Object);
+
+            //Act
+            var createdActionResult = await controller.Post(candidateToBePosted);
+
+            //Asset
+            var result = createdActionResult.Result as CreatedAtActionResult;
+            var createdCandidate = result.Value as Candidate;
+            createdCandidate.Should().NotBeEquivalentTo(candidateToBePosted,
+                options=>options.ComparingByMembers<CandidateDto>().
+                ExcludingMissingMembers());
         }
 
         private Candidate RandomCandidate() => new Candidate

@@ -78,7 +78,7 @@ namespace Job.Controllers
                 };
 
                 await _repository.CreateOrUpdateAsync(candidate);
-                return CreatedAtAction(nameof(Get), new { candidate.Id }, candidate);
+                return CreatedAtAction(nameof(Get), new { candidate.Id }, dto );
             }
             catch (Exception ex)
             {
