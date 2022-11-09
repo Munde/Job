@@ -28,7 +28,7 @@ namespace Job.Repositories
             {
 
                 //Get all the records and cast to list 
-                List<Candidate> candidates = GetCsvRecords();
+                List<Candidate> candidates = (List<Candidate>)GetCsvRecords();
 
                 //check if the candidate details exists using given email
                 var existingCandidate = candidates.FirstOrDefault(x=>x.Email == candidate.Email);
@@ -38,19 +38,32 @@ namespace Job.Repositories
                 {
                     //remove the existing instance of candidate from memory 
                     candidates.Remove(existingCandidate);
+
+                    //then add the new one with updated details  but we need to preserve the candidate Id
+                    candidate.Id = existingCandidate.Id;
+                    candidates.Add(candidate);
+                }
+                else
+                {
+                    //add the new candidate the list of existsing candidates in memory
+                    candidates.Add(candidate);
                 }
 
                     //create a stream write by providing path and the encoding type 
-                    using StreamWriter sw = new(_path, false, new UTF8Encoding(true));
+                using StreamWriter sw = new(_path, false, new UTF8Encoding(true));
                 using CsvWriter cw = new(sw);
 
                 //Write header of the csv using the candidate fields then move to next record
                 cw.WriteHeader<Candidate>();
                 cw.NextRecord();
 
-                //write the candidate details to the csv
-                cw.WriteRecord(candidate);
-                cw.NextRecord();
+
+                foreach (var cand in candidates)
+                {
+                    //write the candidate details to the csv
+                    cw.WriteRecord(candidate);
+                    cw.NextRecord();
+                }
 
                 return await Task.FromResult(new Response(true, "Candidate details recorded successfully"));
             }
