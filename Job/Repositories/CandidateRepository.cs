@@ -19,15 +19,29 @@ namespace Job.Repositories
         public CandidateRepository(IWebHostEnvironment environment)
         {
             _environment = environment;
-            _path = $"{_environment}/{_datastore}";
+            _path = $"{_environment.WebRootPath}/{_datastore}";
         }
 
         public async ValueTask<Response> CreateOrUpdateAsync(Candidate candidate)
         {
             try
             {
-                //create a stream write by providing path and the encoding type 
-                using StreamWriter sw = new(_path, false, new UTF8Encoding(true));
+
+                //Get all the records and cast to list 
+                List<Candidate> candidates = GetCsvRecords();
+
+                //check if the candidate details exists using given email
+                var existingCandidate = candidates.FirstOrDefault(x=>x.Email == candidate.Email);
+
+                //if candidate found then lets update 
+                if (existingCandidate is not null)
+                {
+                    //remove the existing instance of candidate from memory 
+                    candidates.Remove(existingCandidate);
+                }
+
+                    //create a stream write by providing path and the encoding type 
+                    using StreamWriter sw = new(_path, false, new UTF8Encoding(true));
                 using CsvWriter cw = new(sw);
 
                 //Write header of the csv using the candidate fields then move to next record
@@ -96,7 +110,8 @@ namespace Job.Repositories
                 using StreamReader reader = new(_path, Encoding.Default);
                 using CsvReader csvReader = new(reader);
                 csvReader.Configuration.RegisterClassMap<CandidateMap>();
-                return csvReader.GetRecords<Candidate>();
+                var records = (csvReader.GetRecords<Candidate>()).ToList();
+                return records??new List<Candidate>();
             }
             catch (Exception)
             {

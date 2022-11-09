@@ -23,11 +23,11 @@ namespace Job.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async ValueTask<ActionResult<IEnumerable<Candidate>>> GetAsync(
+        public async ValueTask<ActionResult<IEnumerable<Candidate>>> Get(
             [FromQuery] int page = 1,
             [FromQuery] int size = 5)
         {
-            if(page <= 1)
+            if(page < 1)
                 throw new ArgumentException("Invalid page number provided", nameof(page));
 
             if(size < 1)
@@ -44,7 +44,7 @@ namespace Job.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async ValueTask<IActionResult> GetAsync(Guid id)
+        public async ValueTask<IActionResult> Get(Guid id)
         {
             var candidate = await _repository.GetAsync(id);
 
@@ -58,7 +58,7 @@ namespace Job.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async ValueTask<ActionResult<Response>> PostAsync([FromBody] CandidateDto dto)
+        public async ValueTask<ActionResult<Response>> Post([FromBody] CandidateDto dto)
         {
             try
             {
@@ -78,7 +78,7 @@ namespace Job.Controllers
                 };
 
                 await _repository.CreateOrUpdateAsync(candidate);
-                return CreatedAtAction(nameof(GetAsync), new { candidate.Id }, candidate);
+                return CreatedAtAction(nameof(Get), new { candidate.Id }, candidate);
             }
             catch (Exception ex)
             {

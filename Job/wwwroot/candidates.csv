@@ -1,0 +1,2 @@
+﻿Firstname,Lastname,Email,Phone,CallTimeInterval,LinkedInProfile,GithubLink,Comment,Id,CreatedAt
+string,string,user@example.com,string,string,string,string,string,cec4afd5-4d5d-4989-830c-1b1858b44b11,09/11/2022 5:54:40 PM +03:00
